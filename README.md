@@ -1,66 +1,184 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+# Ibrahim_Nidam_SmartSave
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+**SaveSmart – Application d’optimisation budgétaire**
 
-## Learning Laravel
+**Author du Brief:** Iliass RAIHANI.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Author de Code:** Ibrahim Nidam.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## Links
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **GitHub Repository :** [View on GitHub](https://github.com/Youcode-Classe-E-2024-2025/Ibrahim_Nidam_SmartSave.git)
+- **Project Backlog :** [View Backlog](https://github.com/orgs/Youcode-Classe-E-2024-2025/projects/136/views/1?system_template=team_planning)
+- **UML Diagrams:** [View in public/UML]()
 
-## Laravel Sponsors
+![Diagram](public/UML/SmartSave%20-%20UML.drawio.svg)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Créé : 24/02/25
 
-### Premium Partners
+Application web en Laravel permettant aux utilisateurs de saisir leurs revenus et dépenses, puis de bénéficier d’une répartition automatique du budget selon des règles logiques (par exemple, la règle 50/30/20). Le projet est conçu pour être réalisé sans recours à l’intelligence artificielle.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+# Configuration et Exécution du Projet Laravel
 
-## Contributing
+## Prérequis
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Avant de commencer, assurez-vous d'avoir installé les outils suivants :
 
-## Code of Conduct
+- **PHP** (à partir de la version recommandée par Laravel, voir [PHP](https://www.php.net/)).
+- **Composer** ([télécharger ici](https://getcomposer.org/download/)).
+- **Node.js** et **npm** ([télécharger ici](https://nodejs.org/)).
+- **MySQL** (ou un autre SGBD compatible, ex: PostgreSQL).
+- **Laravel** installé globalement (optionnel, peut être utilisé via Composer).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Installation du projet
 
-## Security Vulnerabilities
+### 1. Cloner le dépôt
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Ouvrez un terminal et exécutez :
+```bash
+git clone https://github.com/Youcode-Classe-E-2024-2025/Ibrahim_Nidam_Library_Management.git
+cd Ibrahim_Nidam_SmartSave
+```
 
-## License
+### 2. Installer les dépendances PHP
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Dans le dossier du projet, exécutez :
+```bash
+composer install
+```
+
+### 3. Configurer le fichier `.env`
+
+Copiez le fichier `.env.example` et renommez-le en `.env` :
+```bash
+cp .env.example .env  # Linux/Mac
+copy .env.example .env # Windows
+```
+
+Modifiez les paramètres de la base de données dans `.env` :
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=nom_de_votre_bdd
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+### 4. Générer la clé d'application
+
+Exécutez la commande suivante pour générer une clé unique :
+```bash
+php artisan key:generate
+```
+
+### 5. Exécuter les migrations et seeders (si disponibles)
+
+Créez la base de données et appliquez les migrations :
+```bash
+php artisan migrate --seed
+```
+
+### 6. Installer les dépendances front-end
+
+Installez les dépendances npm :
+```bash
+npm install
+```
+Si votre projet utilise Vite, démarrez le build :
+```bash
+npm run dev
+```
+
+### 7. Démarrer le serveur local
+
+Utilisez la commande artisan pour démarrer le serveur Laravel :
+```bash
+php artisan serve
+```
+Accédez au projet via : [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+### 8. Configuration supplémentaire (si nécessaire)
+
+- Si vous utilisez **Sail** (environnement Docker pour Laravel) :
+  ```bash
+  ./vendor/bin/sail up -d
+  ```
+- Si vous utilisez **Horizon** pour la gestion des files d'attente :
+  ```bash
+  php artisan horizon
+  ```
+
+Votre projet est maintenant configuré et prêt à être utilisé 🚀
+
+
+
+
+# Contexte du projet:
+
+Face à l’importance de la gestion financière personnelle, SaveSmart se présente comme un outil simple et efficace pour aider chacun à maîtriser ses finances. Ce projet s’inscrit dans un cursus de niveau intermédiaire, alliant la mise en pratique des compétences Laravel et la gestion de projet en mode agile.
+
+## **Objectifs du projet :**
+
+#### **Fonctionnels :**
+- Permettre l’inscription/authentification sécurisée des utilisateurs. (S1)
+- Ajout de plusieurs utilisateurs sous un même compte familial. (S1)
+- Gérer la saisie et le suivi des revenus, dépenses et objectifs financiers via des formulaires CRUD. (S1)
+- Offrir des visualisations graphiques simples (tableaux, diagrammes) pour illustrer la répartition du budget. (S1)
+- Ajout de catégories personnalisables (ex. Alimentation, Logement, Divertissement, Épargne). (S1)
+- Création d’objectifs d’épargne (ex. Acheter un PC, Partir en vacances). (S2)
+- Affichage de la progression par rapport aux montants économisés. (S2)
+- Développer un algorithme d’optimisation budgétaire (basé sur des règles logiques et non sur l’IA) qui propose une répartition du budget en fonction des priorités définies (ex. besoins, envies, épargne). (S2)
+- Ajout méthodes d’optimisation 50/30/20 (Besoins 50% / Envies 30% / Épargne 20%). (S2)
+Export des données en PDF ou CSV.
+#### **Techniques :**
+
+- Mise en place d’un environnement Laravel complet (installation, configuration, structuration MVC).
+- Intégration d’un système de tests unitaires et fonctionnels pour garantir la robustesse du code.
+
+
+
+## **Modalités pédagogiques**
+
+- Travail individuel.
+- Approche itérative : deux cycles de développement avec un livrable à la fin de chaque semaine (24/02/2025 -> 7/02/2025).
+- Méthodologie agile : suivi du projet via GitHub Project, avec un backlog et un tableau Kanban pour organiser et prioriser les tâches.
+
+## **Modalités d'évaluation**
+
+- Qualité du code : architecture Laravel, propreté du code, tests unitaires et fonctionnels.
+- Pertinence de l’algorithme : logique de répartition budgétaire respectant la règle établie.
+- Documentation : clarté du README, présence des diagrammes de modélisation et du planning sur GitHub.
+- Présentation orale : qualité de la soutenance (présentation, démonstration et réponses aux questions).
+
+## **Livrables**
+**Semaine 1 :**
+- Mise en place de l’environnement Laravel, structure MVC, configuration de la base de données et implémentation de l’authentification.
+- Développement des premières interfaces de saisie des données financières (formulaires CRUD).
+- Dépôt GitHub initial avec documentation et organisation du projet (backlog, Kanban).
+
+**Semaine 2 :**
+- Intégration de l’algorithme d’optimisation budgétaire et développement des visualisations (graphiques ou indicateurs).
+- Finalisation des tests et amélioration de l’UI/UX.
+- Ajout des diagrammes de classe et de cas d’utilisation dans la documentation, préparation de la présentation de soutenance.
+- Livraison finale sur GitHub (code source, documentation complète et présentation).
+
+## **Critères de performance**
+
+*Fonctionnels :*
+- Authentification sécurisée et gestion des données financières (création, modification, suppression).
+- Répartition automatique du budget conforme aux règles établies.
+
+*Techniques :*
+- Architecture MVC bien définie, code modulaire et tests automatisés.
+
+*Organisationnels :*
+- Suivi régulier via GitHub avec backlog et tableau Kanban mis à jour.
+- Respect des deadlines et qualité de la documentation.
+
+*Pédagogiques :*
+- Clarté des diagrammes (classe et usecase) et pertinence de la présentation lors de la soutenance.
