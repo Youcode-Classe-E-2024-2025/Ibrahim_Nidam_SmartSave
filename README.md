@@ -1,7 +1,3 @@
-
-
-
-
 # Ibrahim_Nidam_SmartSave
 
 **SaveSmart – Application d’optimisation budgétaire**
