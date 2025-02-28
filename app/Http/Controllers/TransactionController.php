@@ -53,6 +53,13 @@ class TransactionController extends Controller
         $expenseCategories = $expenseDataQuery->pluck('category.name');
         $expenseData = $expenseDataQuery->pluck('total');
         
+        $incomes = Transaction::where('profile_id', $profileIds)
+                            ->where('type', 'income')
+                            ->sum('amount');
+        $expenses = Transaction::where('profile_id', $profileIds)
+                                ->where('type', 'expense')
+                                ->sum('amount');
+        $accountBalance = $incomes - $expenses;
 
         return view('dashboard', compact(
             'transactions', 
@@ -61,7 +68,8 @@ class TransactionController extends Controller
             'incomeCategories', 
             'incomeData',
             'expenseCategories', 
-            'expenseData'
+            'expenseData',
+            'accountBalance'
         ));
     }
 

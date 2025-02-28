@@ -11,12 +11,35 @@ class SavingGoalController extends Controller
     /**
      * Display a listing of the resource.
      */
+    // In SavingGoalController.php
     public function index()
-    {
-        $savingGoals = SavingGoal::with('profile')->get();
-        $profileId = session('selected_profile_id');
-        return view('savingGoals', ['savingGoals'=>$savingGoals,'profileId'=> $profileId]);
-    }
+{
+    // Get all profiles associated with the authenticated user
+    $profileIds = Auth::user()->profiles->pluck('id');
+
+    // Calculate the total account balance across all profiles
+    $totalIncome = Transaction::whereIn('profile_id', $profileIds)
+        ->where('type', 'income')
+        ->sum('amount');
+
+    $totalExpenses = Transaction::whereIn('profile_id', $profileIds)
+        ->where('type', 'expense')
+        ->sum('amount');
+
+    $accountBalance = $totalIncome - $totalExpenses;
+
+    // Retrieve all saving goals for the account (across all profiles)
+    $savingGoals = SavingGoal::whereIn('profile_id', $profileIds)
+        ->with('profile')
+        ->get();
+
+    return view('savingGoals', [
+        'savingGoals'    => $savingGoals,
+        'profileId'      => session('selected_profile_id'),
+        'accountBalance' => $accountBalance
+    ]);
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -48,7 +71,7 @@ class SavingGoalController extends Controller
         $savingGoal->deadline = $request->deadline;
         $savingGoal->save();
 
-        return redirect('/saving-goals')->with('success', 'Saving goal created successfully!');
+        return redirect('/saving-goals');
     }
 
     /**
@@ -57,7 +80,7 @@ class SavingGoalController extends Controller
     public function destroy(SavingGoal $savingGoal)
     {
         $savingGoal->delete();
-        return redirect('/saving-goals')->with('success', 'Saving goal deleted successfully!');
+        return redirect('/saving-goals');
     }
 
     /**
@@ -74,7 +97,7 @@ class SavingGoalController extends Controller
         $savingGoal->current_amount += $request->amount;
         $savingGoal->save();
 
-        return redirect('/saving-goals')->with('success', 'Funds added successfully!');
+        return redirect('/saving-goals');
     }
 
     /**
@@ -82,34 +105,37 @@ class SavingGoalController extends Controller
      */
     public function createTransaction(Request $request, SavingGoal $savingGoal)
     {
-        $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'category' => 'required|string',
-            'account' => 'required|string',
-            'notes' => 'nullable|string',
-        ]);
+        $profileId = session('selected_profile_id');
 
-        // Ensure the goal has sufficient funds
-        if ($savingGoal->current_amount < $request->amount) {
-            return redirect('/saving-goals')->with('error', 'Insufficient funds in the saving goal!');
+        // Recalculate account balance for additional safety:
+        $incomes = Transaction::where('profile_id', $profileId)
+                            ->where('type', 'income')
+                            ->sum('amount');
+        $expenses = Transaction::where('profile_id', $profileId)
+                                ->where('type', 'expense')
+                                ->sum('amount');
+        $accountBalance = $incomes - $expenses;
+
+        // Ensure sufficient funds before allowing the transaction
+        if ($accountBalance < $savingGoal->target_amount) {
+            return redirect('/saving-goals')->with('error', 'Insufficient funds for this goal.');
         }
 
-        // Create a new transaction
+        // Use the target amount from the saving goal
+        $amount = $savingGoal->target_amount;
+
+        // Create the expense transaction
         $transaction = new Transaction();
-        $transaction->profile_id = $savingGoal->profile_id;
-        $transaction->amount = $request->amount;
-        $transaction->type = 'expense';
-        $transaction->category = $request->category;
-        $transaction->account = $request->account;
-        $transaction->description = $savingGoal->title . ' goal expense';
-        $transaction->notes = $request->notes;
-        $transaction->date = now();
+        $transaction->profile_id   = $profileId;
+        $transaction->amount       = $amount; // Use target amount
+        $transaction->type         = 'expense';
+        $transaction->category_id  = 1;
+        $transaction->description  = 'Expense for goal: ' . $savingGoal->title;
+        $transaction->date         = now();
         $transaction->save();
 
-        // Reduce the current amount in the saving goal
-        $savingGoal->current_amount -= $request->amount;
-        $savingGoal->save();
+        $savingGoal->delete();
 
-        return redirect('/saving-goals')->with('success', 'Transaction created successfully!');
+        return redirect('/dashboard')->with('success', 'Transaction created successfully.');
     }
 }

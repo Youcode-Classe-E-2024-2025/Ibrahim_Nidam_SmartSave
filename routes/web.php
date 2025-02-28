@@ -30,4 +30,4 @@ Route::get('/saving-goals', [SavingGoalController::class, 'index'])->name('savin
 
 Route::get('/dashboard', [TransactionController::class, 'index']);
 
-Route::post('/saving-goals/{savingGoal}/add-funds', [SavingGoalController::class, 'addFunds'])->name('saving-goals.add-funds');
+Route::post('/saving-goals/{savingGoal}/create-transaction', [SavingGoalController::class, 'createTransaction'])->name('saving-goals.create-transaction');

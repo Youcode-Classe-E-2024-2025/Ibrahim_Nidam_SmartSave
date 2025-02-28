@@ -53,13 +53,19 @@
         <!-- Charts Section -->
         <section class="mb-12">
             <h2 class="text-xl font-semibold mb-6">Financial Overview</h2>
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- Income Chart -->
                 <div class="bg-dark-surface p-6 rounded border border-dark-border">
                     <h3 class="text-lg font-medium mb-4">Income by Category</h3>
                     <div class="h-64">
                         <canvas id="incomeChart"></canvas>
                     </div>
+                </div>
+
+                <!-- Account Balance Card -->
+                <div class="bg-gradient-to-r from-income to-expense p-6 rounded border border-dark-border flex flex-col items-center justify-center">
+                    <p class="text-lg font-medium mb-2 text-white">Account Balance</p>
+                    <h2 class="text-4xl font-bold text-white">${{ number_format($accountBalance, 2) }}</h2>
                 </div>
                 
                 <!-- Expense Chart -->
@@ -366,302 +372,18 @@
         </div>
     </div>
     
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const allCategories = {!! json_encode($categories) !!};
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const allCategories = {!! json_encode($categories) !!};
 
-            // Function to update the category dropdown based on the selected type
-            function updateCategoryDropdown(selectedType) {
-                const categorySelect = document.getElementById('category_id');
-                // Clear current options
-                categorySelect.innerHTML = '<option value="">Select a category</option>';
-                
-                // Filter the categories by the selected type
-                const filteredCategories = allCategories.filter(category => category.type === selectedType);
-                
-                // Append filtered categories as options
-                filteredCategories.forEach(category => {
-                    const option = document.createElement('option');
-                    option.value = category.id;
-                    option.text = category.name;
-                    categorySelect.appendChild(option);
-                });
-            }
-
-            // Listen for changes on the transaction type radio buttons
-            const typeRadios = document.querySelectorAll('#transactionForm input[name="type"]');
-            typeRadios.forEach(radio => {
-                radio.addEventListener('change', function() {
-                    updateCategoryDropdown(this.value);
-                });
-            });
-            
-            // Initialize the dropdown with the default selected type (assuming 'income' is default)
-            const defaultType = document.querySelector('#transactionForm input[name="type"]:checked');
-            if (defaultType) {
-                updateCategoryDropdown(defaultType.value);
-            }
-            
-            // Chart initialization
-            initCharts();
-            
-            // Modal controls
-            setupModals();
-            
-            // Transaction actions
-            setupTransactionActions();
-            
-            // Category actions
-            setupCategoryActions();
-        });
-        
-        function initCharts() {
-            // Income Chart
-            const incomeCtx = document.getElementById('incomeChart').getContext('2d');
-            const incomeChart = new Chart(incomeCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: {!! json_encode($incomeCategories) !!},
-                    datasets: [{
-                        data: {!! json_encode($incomeData) !!},
-                        backgroundColor: [
-                            '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#06B6D4'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: '#E5E7EB'
-                            }
-                        }
-                    }
-                }
-            });
-            
-            // Expense Chart
-            const expenseCtx = document.getElementById('expenseChart').getContext('2d');
-            const expenseChart = new Chart(expenseCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: {!! json_encode($expenseCategories) !!},
-                    datasets: [{
-                        data: {!! json_encode($expenseData) !!},
-                        backgroundColor: [
-                            '#EF4444', '#F59E0B', '#8B5CF6', '#EC4899', '#3B82F6', '#06B6D4'
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'right',
-                            labels: {
-                                color: '#E5E7EB'
-                            }
-                        }
-                    }
-                }
-            });
-        }
-        
-        function setupModals() {
-            // Transaction Modal
-            const transactionModal = document.getElementById('transactionModal');
-            const openAddTransactionModal = document.getElementById('openAddTransactionModal');
-            const closeTransactionModal = document.getElementById('closeTransactionModal');
-            const cancelTransaction = document.getElementById('cancelTransaction');
-            
-            openAddTransactionModal.addEventListener('click', () => {
-                // Reset the form
-                document.getElementById('transactionForm').reset();
-                document.getElementById('transactionForm').action = "{{ route('transactions.store') }}";
-                document.getElementById('transactionMethod').value = 'POST';
-                document.getElementById('transactionModalTitle').textContent = 'Add Transaction';
-                
-                // Set default date to today
-                document.getElementById('date').value = new Date().toISOString().split('T')[0];
-                
-                // Initialize category dropdown based on the default selected type
-                const defaultType = document.querySelector('#transactionForm input[name="type"]:checked').value;
-                updateCategoryDropdown(defaultType);
-                
-                transactionModal.classList.remove('hidden');
-            });
-            
-            closeTransactionModal.addEventListener('click', () => {
-                transactionModal.classList.add('hidden');
-            });
-            
-            cancelTransaction.addEventListener('click', () => {
-                transactionModal.classList.add('hidden');
-            });
-            
-            // Category Modal
-            const categoryModal = document.getElementById('categoryModal');
-            const openAddCategoryModal = document.getElementById('openAddCategoryModal');
-            const closeCategoryModal = document.getElementById('closeCategoryModal');
-            const cancelCategory = document.getElementById('cancelCategory');
-            
-            openAddCategoryModal.addEventListener('click', () => {
-                // Reset the form
-                document.getElementById('categoryForm').reset();
-                document.getElementById('categoryForm').action = "{{ route('categories.store') }}";
-                document.getElementById('categoryMethod').value = 'POST';
-                document.getElementById('categoryModalTitle').textContent = 'Add Category';
-                
-                categoryModal.classList.remove('hidden');
-            });
-            
-            closeCategoryModal.addEventListener('click', () => {
-                categoryModal.classList.add('hidden');
-            });
-            
-            cancelCategory.addEventListener('click', () => {
-                categoryModal.classList.add('hidden');
-            });
-            
-            // Delete Transaction Modal
-            const deleteTransactionModal = document.getElementById('deleteTransactionModal');
-            const cancelDeleteTransaction = document.getElementById('cancelDeleteTransaction');
-            
-            cancelDeleteTransaction.addEventListener('click', () => {
-                deleteTransactionModal.classList.add('hidden');
-            });
-            
-            // Delete Category Modal
-            const deleteCategoryModal = document.getElementById('deleteCategoryModal');
-            const cancelDeleteCategory = document.getElementById('cancelDeleteCategory');
-            
-            cancelDeleteCategory.addEventListener('click', () => {
-                deleteCategoryModal.classList.add('hidden');
-            });
-        }
-        
-        function setupTransactionActions() {
-            // Edit Transaction
-            const editButtons = document.querySelectorAll('.edit-transaction');
-            editButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const transactionId = button.getAttribute('data-id');
-                    const date = button.getAttribute('data-date');
-                    const amount = button.getAttribute('data-amount');
-                    const description = button.getAttribute('data-description');
-                    const categoryId = button.getAttribute('data-category-id');
-                    const profileId = button.getAttribute('data-profile-id');
-                    const type = button.getAttribute('data-type');
-                    
-                    // Update the form
-                    const form = document.getElementById('transactionForm');
-                    form.action = `/transactions/${transactionId}`;
-                    document.getElementById('transactionMethod').value = 'PUT';
-                    document.getElementById('transactionModalTitle').textContent = 'Edit Transaction';
-                    
-                    // Fill the form fields
-                    document.getElementById('date').value = date;
-                    document.getElementById('amount').value = amount;
-                    document.getElementById('description').value = description;
-                    
-                    // Select the correct type radio button
-                    const typeRadios = form.querySelectorAll('input[name="type"]');
-                    typeRadios.forEach(radio => {
-                        if (radio.value === type.toLowerCase()) {
-                            radio.checked = true;
-                        }
-                    });
-                    
-                    // Update category dropdown based on the transaction type
-                    updateCategoryDropdown(type.toLowerCase());
-                    
-                    // Select the correct category and profile
-                    setTimeout(() => {
-                        document.getElementById('category_id').value = categoryId;
-                        document.getElementById('profile_id').value = profileId;
-                    }, 100);
-                    
-                    // Show the modal
-                    document.getElementById('transactionModal').classList.remove('hidden');
-                });
-            });
-            
-            // Delete Transaction
-            const deleteButtons = document.querySelectorAll('.delete-transaction');
-            const deleteForm = document.getElementById('deleteTransactionForm');
-            
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const transactionId = button.getAttribute('data-id');
-                    deleteForm.action = `/transactions/${transactionId}`;
-                    document.getElementById('deleteTransactionModal').classList.remove('hidden');
-                });
-            });
-        }
-        
-        function setupCategoryActions() {
-            // Edit Category
-            const editButtons = document.querySelectorAll('.edit-category');
-            editButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const categoryId = button.getAttribute('data-id');
-                    const name = button.getAttribute('data-name');
-                    const color = button.getAttribute('data-color');
-                    const type = button.getAttribute('data-type');
-                    
-                    // Update the form
-                    const form = document.getElementById('categoryForm');
-                    form.action = `/categories/${categoryId}`;
-                    document.getElementById('categoryMethod').value = 'PUT';
-                    document.getElementById('categoryModalTitle').textContent = 'Edit Category';
-                    
-                    // Fill the form fields
-                    document.getElementById('name').value = name;
-                    document.getElementById('color').value = color;
-                    
-                    // Select the correct type radio button
-                    const typeRadios = form.querySelectorAll('input[name="type"]');
-                    typeRadios.forEach(radio => {
-                        if (radio.value === type.toLowerCase()) {
-                            radio.checked = true;
-                        }
-                    });
-                    
-                    // Show the modal
-                    document.getElementById('categoryModal').classList.remove('hidden');
-                });
-            });
-            
-            // Delete Category
-            const deleteButtons = document.querySelectorAll('.delete-category');
-            const deleteForm = document.getElementById('deleteCategoryForm');
-            
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const categoryId = button.getAttribute('data-id');
-                    deleteForm.action = `/categories/${categoryId}`;
-                    document.getElementById('deleteCategoryModal').classList.remove('hidden');
-                });
-            });
-        }
-        
+        // Function to update the category dropdown based on the selected type
         function updateCategoryDropdown(selectedType) {
             const categorySelect = document.getElementById('category_id');
-            const allCategories = {!! json_encode($categories) !!};
-            
             // Clear current options
             categorySelect.innerHTML = '<option value="">Select a category</option>';
             
             // Filter the categories by the selected type
-            const filteredCategories = allCategories.filter(category => 
-                category.type.toLowerCase() === selectedType.toLowerCase()
-            );
+            const filteredCategories = allCategories.filter(category => category.type === selectedType);
             
             // Append filtered categories as options
             filteredCategories.forEach(category => {
@@ -671,6 +393,290 @@
                 categorySelect.appendChild(option);
             });
         }
-    </script>
+
+        // Listen for changes on the transaction type radio buttons
+        const typeRadios = document.querySelectorAll('#transactionForm input[name="type"]');
+        typeRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                updateCategoryDropdown(this.value);
+            });
+        });
+        
+        // Initialize the dropdown with the default selected type (assuming 'income' is default)
+        const defaultType = document.querySelector('#transactionForm input[name="type"]:checked');
+        if (defaultType) {
+            updateCategoryDropdown(defaultType.value);
+        }
+        
+        // Chart initialization
+        initCharts();
+        
+        // Modal controls
+        setupModals();
+        
+        // Transaction actions
+        setupTransactionActions();
+        
+        // Category actions
+        setupCategoryActions();
+    });
+    
+    function initCharts() {
+        // Income Chart
+        const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+        const incomeChart = new Chart(incomeCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {!! json_encode($incomeCategories) !!},
+                datasets: [{
+                    data: {!! json_encode($incomeData) !!},
+                    backgroundColor: [
+                        '#10B981', '#3B82F6', '#8B5CF6', '#EC4899', '#F59E0B', '#06B6D4'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#E5E7EB'
+                        }
+                    }
+                }
+            }
+        });
+        
+        // Expense Chart
+        const expenseCtx = document.getElementById('expenseChart').getContext('2d');
+        const expenseChart = new Chart(expenseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: {!! json_encode($expenseCategories) !!},
+                datasets: [{
+                    data: {!! json_encode($expenseData) !!},
+                    backgroundColor: [
+                        '#EF4444', '#F59E0B', '#8B5CF6', '#EC4899', '#3B82F6', '#06B6D4'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            color: '#E5E7EB'
+                        }
+                    }
+                }
+            }
+        });
+    }
+    
+    function setupModals() {
+        // Transaction Modal
+        const transactionModal = document.getElementById('transactionModal');
+        const openAddTransactionModal = document.getElementById('openAddTransactionModal');
+        const closeTransactionModal = document.getElementById('closeTransactionModal');
+        const cancelTransaction = document.getElementById('cancelTransaction');
+        
+        openAddTransactionModal.addEventListener('click', () => {
+            // Reset the form
+            document.getElementById('transactionForm').reset();
+            document.getElementById('transactionForm').action = "{{ route('transactions.store') }}";
+            document.getElementById('transactionMethod').value = 'POST';
+            document.getElementById('transactionModalTitle').textContent = 'Add Transaction';
+            
+            // Set default date to today
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
+            
+            // Initialize category dropdown based on the default selected type
+            const defaultType = document.querySelector('#transactionForm input[name="type"]:checked').value;
+            updateCategoryDropdown(defaultType);
+            
+            transactionModal.classList.remove('hidden');
+        });
+        
+        closeTransactionModal.addEventListener('click', () => {
+            transactionModal.classList.add('hidden');
+        });
+        
+        cancelTransaction.addEventListener('click', () => {
+            transactionModal.classList.add('hidden');
+        });
+        
+        // Category Modal
+        const categoryModal = document.getElementById('categoryModal');
+        const openAddCategoryModal = document.getElementById('openAddCategoryModal');
+        const closeCategoryModal = document.getElementById('closeCategoryModal');
+        const cancelCategory = document.getElementById('cancelCategory');
+        
+        openAddCategoryModal.addEventListener('click', () => {
+            // Reset the form
+            document.getElementById('categoryForm').reset();
+            document.getElementById('categoryForm').action = "{{ route('categories.store') }}";
+            document.getElementById('categoryMethod').value = 'POST';
+            document.getElementById('categoryModalTitle').textContent = 'Add Category';
+            
+            categoryModal.classList.remove('hidden');
+        });
+        
+        closeCategoryModal.addEventListener('click', () => {
+            categoryModal.classList.add('hidden');
+        });
+        
+        cancelCategory.addEventListener('click', () => {
+            categoryModal.classList.add('hidden');
+        });
+        
+        // Delete Transaction Modal
+        const deleteTransactionModal = document.getElementById('deleteTransactionModal');
+        const cancelDeleteTransaction = document.getElementById('cancelDeleteTransaction');
+        
+        cancelDeleteTransaction.addEventListener('click', () => {
+            deleteTransactionModal.classList.add('hidden');
+        });
+        
+        // Delete Category Modal
+        const deleteCategoryModal = document.getElementById('deleteCategoryModal');
+        const cancelDeleteCategory = document.getElementById('cancelDeleteCategory');
+        
+        cancelDeleteCategory.addEventListener('click', () => {
+            deleteCategoryModal.classList.add('hidden');
+        });
+    }
+    
+    function setupTransactionActions() {
+        // Edit Transaction
+        const editButtons = document.querySelectorAll('.edit-transaction');
+        editButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const transactionId = button.getAttribute('data-id');
+                const date = button.getAttribute('data-date');
+                const amount = button.getAttribute('data-amount');
+                const description = button.getAttribute('data-description');
+                const categoryId = button.getAttribute('data-category-id');
+                const profileId = button.getAttribute('data-profile-id');
+                const type = button.getAttribute('data-type');
+                
+                // Update the form
+                const form = document.getElementById('transactionForm');
+                form.action = `/transactions/${transactionId}`;
+                document.getElementById('transactionMethod').value = 'PUT';
+                document.getElementById('transactionModalTitle').textContent = 'Edit Transaction';
+                
+                // Fill the form fields
+                document.getElementById('date').value = date;
+                document.getElementById('amount').value = amount;
+                document.getElementById('description').value = description;
+                
+                // Select the correct type radio button
+                const typeRadios = form.querySelectorAll('input[name="type"]');
+                typeRadios.forEach(radio => {
+                    if (radio.value === type.toLowerCase()) {
+                        radio.checked = true;
+                    }
+                });
+                
+                // Update category dropdown based on the transaction type
+                updateCategoryDropdown(type.toLowerCase());
+                
+                // Select the correct category and profile
+                setTimeout(() => {
+                    document.getElementById('category_id').value = categoryId;
+                    document.getElementById('profile_id').value = profileId;
+                }, 100);
+                
+                // Show the modal
+                document.getElementById('transactionModal').classList.remove('hidden');
+            });
+        });
+        
+        // Delete Transaction
+        const deleteButtons = document.querySelectorAll('.delete-transaction');
+        const deleteForm = document.getElementById('deleteTransactionForm');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const transactionId = button.getAttribute('data-id');
+                deleteForm.action = `/transactions/${transactionId}`;
+                document.getElementById('deleteTransactionModal').classList.remove('hidden');
+            });
+        });
+    }
+    
+    function setupCategoryActions() {
+        // Edit Category
+        const editButtons = document.querySelectorAll('.edit-category');
+        editButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const categoryId = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const color = button.getAttribute('data-color');
+                const type = button.getAttribute('data-type');
+                
+                // Update the form
+                const form = document.getElementById('categoryForm');
+                form.action = `/categories/${categoryId}`;
+                document.getElementById('categoryMethod').value = 'PUT';
+                document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+                
+                // Fill the form fields
+                document.getElementById('name').value = name;
+                document.getElementById('color').value = color;
+                
+                // Select the correct type radio button
+                const typeRadios = form.querySelectorAll('input[name="type"]');
+                typeRadios.forEach(radio => {
+                    if (radio.value === type.toLowerCase()) {
+                        radio.checked = true;
+                    }
+                });
+                
+                // Show the modal
+                document.getElementById('categoryModal').classList.remove('hidden');
+            });
+        });
+        
+        // Delete Category
+        const deleteButtons = document.querySelectorAll('.delete-category');
+        const deleteForm = document.getElementById('deleteCategoryForm');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const categoryId = button.getAttribute('data-id');
+                deleteForm.action = `/categories/${categoryId}`;
+                document.getElementById('deleteCategoryModal').classList.remove('hidden');
+            });
+        });
+    }
+    
+    function updateCategoryDropdown(selectedType) {
+        const categorySelect = document.getElementById('category_id');
+        const allCategories = {!! json_encode($categories) !!};
+        
+        // Clear current options
+        categorySelect.innerHTML = '<option value="">Select a category</option>';
+        
+        // Filter the categories by the selected type
+        const filteredCategories = allCategories.filter(category => 
+            category.type.toLowerCase() === selectedType.toLowerCase()
+        );
+        
+        // Append filtered categories as options
+        filteredCategories.forEach(category => {
+            const option = document.createElement('option');
+            option.value = category.id;
+            option.text = category.name;
+            categorySelect.appendChild(option);
+        });
+    }
+</script>
 </body>
 </html>
