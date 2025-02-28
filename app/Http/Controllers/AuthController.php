@@ -32,8 +32,6 @@ class AuthController extends Controller
             'role' => 'admin'
         ]);
         
-        Auth::login($user);
-
         return redirect('/');
     }
 }
