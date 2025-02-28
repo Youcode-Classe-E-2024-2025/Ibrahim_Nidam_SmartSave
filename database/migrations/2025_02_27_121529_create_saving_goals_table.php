@@ -17,8 +17,9 @@ return new class extends Migration
             $table->string('title');
             $table->decimal('target_amount', 10, 2);
             $table->decimal('current_amount', 10, 2)->default(0);
+            $table->text('description')->nullable();
+            $table->date('deadline')->nullable();
             $table->timestamps();
-
             $table->foreign('profile_id')->references('id')->on('profiles')->onDelete('cascade');
         });
     }

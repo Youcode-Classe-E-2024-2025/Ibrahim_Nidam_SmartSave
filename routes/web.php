@@ -29,3 +29,5 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/saving-goals', [SavingGoalController::class, 'index'])->name('saving-goals');
 
 Route::get('/dashboard', [TransactionController::class, 'index']);
+
+Route::post('/saving-goals/{savingGoal}/add-funds', [SavingGoalController::class, 'addFunds'])->name('saving-goals.add-funds');

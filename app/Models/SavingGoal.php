@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class SavingGoal extends Model
 {
-    /** @use HasFactory<\Database\Factories\SavingGoalFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -15,19 +14,19 @@ class SavingGoal extends Model
         'title',
         'target_amount',
         'current_amount',
+        'description',
+        'deadline',
     ];
 
+    protected $casts = [
+        'deadline' => 'date',
+    ];
+
+    /**
+     * Get the profile that owns the saving goal.
+     */
     public function profile()
     {
         return $this->belongsTo(Profile::class);
-    }
-
-    // Example method from your class diagram
-    public function calculateProgress()
-    {
-        if ($this->target_amount == 0) {
-            return 0;
-        }
-        return ($this->current_amount / $this->target_amount) * 100;
     }
 }

@@ -33,171 +33,93 @@
     <nav class="bg-dark-surface border-b border-dark-border px-6 py-4">
         <div class="container mx-auto flex justify-between items-center">
             <div class="flex items-center gap-2">
-                <a href="dashboard.html" class="text-gray-400 hover:text-white">
+                <a href="/dashboard" class="text-gray-400 hover:text-white">
                     <i class="fas fa-arrow-left"></i>
                 </a>
                 <h1 class="text-2xl font-bold">Saving Goals</h1>
             </div>
-            <button id="openNewGoalModal" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
-                <i class="fas fa-plus mr-2"></i>New Goal
-            </button>
+            <div class="flex gap-4">
+                <button id="openNewGoalModal" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
+                    <i class="fas fa-plus mr-2"></i>New Goal
+                </button>
+                <form action="/logout" method="post">
+                    @csrf
+                    <button type="submit" class="cursor-pointer rounded-md px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-700 hover:text-white">Logout</button>
+                </form>
+            </div>
         </div>
     </nav>
     
     <div class="container mx-auto px-4 py-8">
+        @if(session('success'))
+            <div class="bg-green-800 text-white p-4 rounded-md mb-6">
+                {{ session('success') }}
+            </div>
+        @endif
+        
         <!-- Goals Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Goal Card 1 -->
-            <div class="bg-dark-surface rounded-lg border border-dark-border p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-xl font-semibold mb-1">New Car</h3>
-                        <p class="text-sm text-gray-400">Created by John</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button class="text-gray-400 hover:text-white">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-400">Progress</span>
-                            <span class="font-medium">$15,000 / $30,000</span>
+            @forelse($savingGoals as $savingGoal)
+                <!-- Goal Card -->
+                <div class="bg-dark-surface rounded-lg border border-dark-border p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-xl font-semibold mb-1">{{ $savingGoal->title }}</h3>
+                            <p class="text-sm text-gray-400">Created by {{ $savingGoal->profile->name }}</p>
                         </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-success" style="width: 50%"></div>
+                        <div>
+                            <form action="{{ route('saving-goals.destroy', $savingGoal) }}" method="POST" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-gray-400 hover:text-red-400" 
+                                        onclick="return confirm('Are you sure you want to delete this goal?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
                         </div>
                     </div>
                     
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">Deadline</span>
-                        <span>December 31, 2024</span>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-dark-border">
-                        <button class="w-full px-4 py-2 bg-success hover:bg-green-600 rounded-md transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Funds
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Goal Card 2 -->
-            <div class="bg-dark-surface rounded-lg border border-dark-border p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-xl font-semibold mb-1">Vacation Fund</h3>
-                        <p class="text-sm text-gray-400">Created by Sarah</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button class="text-gray-400 hover:text-white">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-400">Progress</span>
-                            <span class="font-medium">$2,500 / $5,000</span>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-sm mb-1">
+                                <span class="text-gray-400">Progress</span>
+                                <span class="font-medium">${{ number_format($savingGoal->current_amount, 2) }} / ${{ number_format($savingGoal->target_amount, 2) }}</span>
+                            </div>
+                            @php
+                                $percentage = ($savingGoal->target_amount > 0) ? ($savingGoal->current_amount / $savingGoal->target_amount * 100) : 0;
+                                $colorClass = $percentage >= 80 ? 'bg-success' : ($percentage >= 50 ? 'bg-warning' : 'bg-danger');
+                            @endphp
+                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                <div class="h-full {{ $colorClass }}" style="width: {{ min($percentage, 100) }}%"></div>
+                            </div>
                         </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-warning" style="width: 50%"></div>
+                        
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-400">Deadline</span>
+                            <span>{{ $savingGoal->deadline ? $savingGoal->deadline->format('F j, Y') : 'No deadline' }}</span>
+                        </div>
+                        
+                        <div class="pt-4 border-t border-dark-border">
+                            @if($savingGoal->current_amount >= $savingGoal->target_amount)
+                                <button class="create-transaction-btn w-full px-4 py-2 bg-success hover:bg-green-600 rounded-md transition-colors" 
+                                        data-goal-id="{{ $savingGoal->id }}" 
+                                        data-amount="{{ $savingGoal->target_amount }}">
+                                    <i class="fas fa-exchange-alt mr-2"></i>Create Transaction
+                                </button>
+                            @else
+                                <button class="add-funds-btn w-full px-4 py-2 {{ $colorClass }} hover:{{ str_replace('bg-', 'bg-', $colorClass) }}-600 rounded-md transition-colors" 
+                                        data-goal-id="{{ $savingGoal->id }}">
+                                    <i class="fas fa-plus mr-2"></i>Add Funds
+                                </button>
+                            @endif
                         </div>
                     </div>
-                    
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">Deadline</span>
-                        <span>July 1, 2024</span>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-dark-border">
-                        <button class="w-full px-4 py-2 bg-warning hover:bg-amber-600 rounded-md transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Funds
-                        </button>
-                    </div>
                 </div>
-            </div>
-            
-            <!-- Goal Card 3 -->
-            <div class="bg-dark-surface rounded-lg border border-dark-border p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-xl font-semibold mb-1">Emergency Fund</h3>
-                        <p class="text-sm text-gray-400">Created by John</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button class="text-gray-400 hover:text-white">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
+            @empty
+                <div class="col-span-3 text-center py-12">
+                    <p class="text-gray-400 text-lg">No saving goals yet. Click the "New Goal" button to create one.</p>
                 </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-400">Progress</span>
-                            <span class="font-medium">$8,000 / $10,000</span>
-                        </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-success" style="width: 80%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">Deadline</span>
-                        <span>No deadline</span>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-dark-border">
-                        <button class="w-full px-4 py-2 bg-success hover:bg-green-600 rounded-md transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Funds
-                        </button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Goal Card 4 -->
-            <div class="bg-dark-surface rounded-lg border border-dark-border p-6">
-                <div class="flex justify-between items-start mb-4">
-                    <div>
-                        <h3 class="text-xl font-semibold mb-1">Home Down Payment</h3>
-                        <p class="text-sm text-gray-400">Created by Sarah</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button class="text-gray-400 hover:text-white">
-                            <i class="fas fa-ellipsis-v"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="space-y-4">
-                    <div>
-                        <div class="flex justify-between text-sm mb-1">
-                            <span class="text-gray-400">Progress</span>
-                            <span class="font-medium">$25,000 / $100,000</span>
-                        </div>
-                        <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
-                            <div class="h-full bg-danger" style="width: 25%"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="flex justify-between text-sm">
-                        <span class="text-gray-400">Deadline</span>
-                        <span>June 30, 2025</span>
-                    </div>
-                    
-                    <div class="pt-4 border-t border-dark-border">
-                        <button class="w-full px-4 py-2 bg-danger hover:bg-red-600 rounded-md transition-colors">
-                            <i class="fas fa-plus mr-2"></i>Add Funds
-                        </button>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
     
@@ -211,7 +133,8 @@
                 </button>
             </div>
             
-            <form id="newGoalForm" class="space-y-4">
+            <form id="newGoalForm" action="{{ route('saving-goals.store') }}" method="POST" class="space-y-4">
+                @csrf
                 <div>
                     <label for="goalTitle" class="block text-sm font-medium mb-1">Goal Title</label>
                     <input type="text" id="goalTitle" name="title" required
@@ -223,10 +146,14 @@
                     <label for="targetAmount" class="block text-sm font-medium mb-1">Target Amount</label>
                     <div class="relative">
                         <span class="absolute left-3 top-2 text-gray-400">$</span>
-                        <input type="number" id="targetAmount" name="targetAmount" required min="1" step="0.01"
+                        <input type="number" id="targetAmount" name="target_amount" required min="1" step="0.01"
                                class="w-full bg-gray-800 border border-dark-border rounded-md pl-8 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                                placeholder="0.00">
                     </div>
+                </div>
+                
+                <div>
+                    <input type="hidden" name="profile_id" value="{{$profileId}}">
                 </div>
                 
                 <div>
@@ -266,7 +193,10 @@
                 </button>
             </div>
             
-            <form id="addFundsForm" class="space-y-4">
+            <form id="addFundsForm" action="" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" id="goalId" name="goal_id" value="">
+                
                 <div>
                     <label for="amount" class="block text-sm font-medium mb-1">Amount</label>
                     <div class="relative">
@@ -309,6 +239,70 @@
         </div>
     </div>
     
+    <!-- Create Transaction Modal -->
+    <div id="createTransactionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-dark-surface rounded-lg w-full max-w-md p-6 border border-dark-border">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold">Create Transaction</h3>
+                <button id="closeTransactionModal" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="createTransactionForm" action="" method="POST" class="space-y-4">
+                @csrf
+                <input type="hidden" id="transactionGoalId" name="goal_id" value="">
+                <input type="hidden" id="transactionAmount" name="amount" value="">
+                
+                <div>
+                    <p class="text-sm mb-4">You are about to create an expense transaction for the goal amount.</p>
+                </div>
+                
+                <div>
+                    <label for="transaction_category" class="block text-sm font-medium mb-1">Category</label>
+                    <select id="transaction_category" name="category" required
+                            class="w-full bg-gray-800 border border-dark-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Select category</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="bills">Bills & Utilities</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="travel">Travel</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="account" class="block text-sm font-medium mb-1">From Account</label>
+                    <select id="account" name="account" required
+                            class="w-full bg-gray-800 border border-dark-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="">Select account</option>
+                        <option value="savings">Savings Account</option>
+                        <option value="checking">Checking Account</option>
+                        <option value="cash">Cash</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="transaction_notes" class="block text-sm font-medium mb-1">Notes (Optional)</label>
+                    <textarea id="transaction_notes" name="notes" rows="2"
+                              class="w-full bg-gray-800 border border-dark-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              placeholder="Add any notes about this transaction..."></textarea>
+                </div>
+                
+                <div class="pt-4 flex justify-end gap-3">
+                    <button type="button" id="cancelTransaction"
+                            class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                            class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
+                        Create Transaction
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // New Goal Modal
@@ -316,7 +310,6 @@
             const openNewGoalModal = document.getElementById('openNewGoalModal');
             const closeNewGoalModal = document.getElementById('closeNewGoalModal');
             const cancelNewGoal = document.getElementById('cancelNewGoal');
-            const newGoalForm = document.getElementById('newGoalForm');
             
             openNewGoalModal.addEventListener('click', () => {
                 newGoalModal.classList.remove('hidden');
@@ -328,26 +321,21 @@
                 });
             });
             
-            newGoalForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // Here you would normally handle the form submission
-                newGoalModal.classList.add('hidden');
-                alert('Goal created successfully!');
-            });
-            
             // Add Funds Modal
             const addFundsModal = document.getElementById('addFundsModal');
-            const addFundsButtons = document.querySelectorAll('button:has(.fa-plus)');
+            const addFundsButtons = document.querySelectorAll('.add-funds-btn');
             const closeAddFundsModal = document.getElementById('closeAddFundsModal');
             const cancelAddFunds = document.getElementById('cancelAddFunds');
             const addFundsForm = document.getElementById('addFundsForm');
+            const goalIdInput = document.getElementById('goalId');
             
             addFundsButtons.forEach(button => {
-                if (button.id !== 'openNewGoalModal') {
-                    button.addEventListener('click', () => {
-                        addFundsModal.classList.remove('hidden');
-                    });
-                }
+                button.addEventListener('click', () => {
+                    const goalId = button.getAttribute('data-goal-id');
+                    goalIdInput.value = goalId;
+                    addFundsForm.action = `/saving-goals/${goalId}/add-funds`;
+                    addFundsModal.classList.remove('hidden');
+                });
             });
             
             [closeAddFundsModal, cancelAddFunds].forEach(element => {
@@ -356,14 +344,32 @@
                 });
             });
             
-            addFundsForm.addEventListener('submit', (e) => {
-                e.preventDefault();
-                // Here you would normally handle the form submission
-                addFundsModal.classList.add('hidden');
-                alert('Funds added successfully!');
+            // Create Transaction Modal
+            const createTransactionModal = document.getElementById('createTransactionModal');
+            const createTransactionButtons = document.querySelectorAll('.create-transaction-btn');
+            const closeTransactionModal = document.getElementById('closeTransactionModal');
+            const cancelTransaction = document.getElementById('cancelTransaction');
+            const createTransactionForm = document.getElementById('createTransactionForm');
+            const transactionGoalIdInput = document.getElementById('transactionGoalId');
+            const transactionAmountInput = document.getElementById('transactionAmount');
+            
+            createTransactionButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const goalId = button.getAttribute('data-goal-id');
+                    const amount = button.getAttribute('data-amount');
+                    transactionGoalIdInput.value = goalId;
+                    transactionAmountInput.value = amount;
+                    createTransactionForm.action = `/saving-goals/${goalId}/create-transaction`;
+                    createTransactionModal.classList.remove('hidden');
+                });
+            });
+            
+            [closeTransactionModal, cancelTransaction].forEach(element => {
+                element.addEventListener('click', () => {
+                    createTransactionModal.classList.add('hidden');
+                });
             });
         });
     </script>
 </body>
 </html>
-
