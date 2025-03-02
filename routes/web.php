@@ -31,3 +31,8 @@ Route::get('/saving-goals', [SavingGoalController::class, 'index'])->name('savin
 Route::get('/dashboard', [TransactionController::class, 'index']);
 
 Route::post('/saving-goals/{savingGoal}/create-transaction', [SavingGoalController::class, 'createTransaction'])->name('saving-goals.create-transaction');
+
+Route::prefix('budget')->group(function () {
+    Route::get('/', [BudgetController::class, 'index'])->name('budget');
+    Route::get('/export/csv', [BudgetController::class, 'exportCSV'])->name('budget.export.csv');
+});

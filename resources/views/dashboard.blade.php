@@ -41,6 +41,9 @@
                 <a href="{{ route('saving-goals') }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
                     Saving Goals
                 </a>
+                <a href=" /budget" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
+                    Budget
+                </a>
                 <form action="/logout" method="post">
                     @csrf
                     <button type="submit" class="cursor-pointer rounded-md px-3 py-2 text-sm font-medium text-gray-500 hover:bg-gray-700 hover:text-white">Logout</button>

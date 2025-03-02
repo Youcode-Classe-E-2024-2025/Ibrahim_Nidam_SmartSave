@@ -39,6 +39,9 @@
         <h1 class="text-2xl font-bold">Saving Goals</h1>
       </div>
       <div class="flex gap-4">
+        <a href=" /budget" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
+          Budget
+        </a>
         <button id="openNewGoalModal" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
           <i class="fas fa-plus mr-2"></i>New Goal
         </button>

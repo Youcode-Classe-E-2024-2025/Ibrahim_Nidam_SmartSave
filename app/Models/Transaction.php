@@ -41,4 +41,11 @@ class Transaction extends Model
         return $this->attributes['type'];
     }
 
+    public static function totalIncome($profile_id)
+    {
+        return self::where('profile_id', $profile_id)
+            ->where('type', 'INCOME')
+            ->sum('amount');
+    }
+
 }
