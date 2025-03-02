@@ -36,7 +36,7 @@ Avant de commencer, assurez-vous d'avoir installé les outils suivants :
 
 Ouvrez un terminal et exécutez :
 ```bash
-git clone https://github.com/Youcode-Classe-E-2024-2025/Ibrahim_Nidam_Library_Management.git
+git clone https://github.com/Youcode-Classe-E-2024-2025/Ibrahim_Nidam_SmartSave.git
 cd Ibrahim_Nidam_SmartSave
 ```
 
