@@ -82,22 +82,6 @@ class SavingGoalController extends Controller
         return redirect('/saving-goals');
     }
 
-    /**
-     * Add funds to a saving goal.
-     */
-    public function addFunds(Request $request, SavingGoal $savingGoal)
-    {
-        $request->validate([
-            'amount' => 'required|numeric|min:1',
-            'source' => 'required|string',
-            'notes' => 'nullable|string',
-        ]);
-
-        $savingGoal->current_amount += $request->amount;
-        $savingGoal->save();
-
-        return redirect('/saving-goals');
-    }
 
     /**
      * Create a transaction from a saving goal.

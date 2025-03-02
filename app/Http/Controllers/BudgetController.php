@@ -15,7 +15,7 @@ class BudgetController extends Controller
         // Get the authenticated user
         $user = Auth::user();
         if (!$user) {
-            return redirect('/login');
+            return redirect('/');
         }
         
         // Get all profile IDs for the current user

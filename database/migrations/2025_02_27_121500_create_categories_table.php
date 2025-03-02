@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('name');        // e.g. Alimentation, Housing, Entertainment
             $table->string('color');       // Hex color code from the color picker
             $table->enum('type', ['income', 'expense']);

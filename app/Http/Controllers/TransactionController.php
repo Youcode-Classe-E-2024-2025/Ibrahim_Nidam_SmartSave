@@ -37,8 +37,9 @@ class TransactionController extends Controller
             ->with(['profile', 'category'])
             ->paginate(10);
 
-        // Retrieve only categories belonging to the logged-in user
-        $categories = Category::where('user_id', $user->id)->get();
+        $categories = Category::whereNull('user_id')
+        ->orWhere('user_id', $user->id)
+        ->get();
 
         // Retrieve only profiles belonging to the logged-in user
         $profiles = $user->profiles;
