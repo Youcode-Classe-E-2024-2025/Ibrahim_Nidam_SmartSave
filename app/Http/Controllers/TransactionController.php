@@ -20,6 +20,18 @@ class TransactionController extends Controller
         // Get all profile IDs for the current user
         $profileIds = $user->profiles->pluck('id')->toArray();
 
+
+        // Calculate the total account balance across all profiles
+        $totalIncome = Transaction::whereIn('profile_id', $profileIds)
+            ->where('type', 'income')
+            ->sum('amount');
+
+        $totalExpenses = Transaction::whereIn('profile_id', $profileIds)
+            ->where('type', 'expense')
+            ->sum('amount');
+
+        $accountBalance = $totalIncome - $totalExpenses;
+
         // Retrieve transactions for these profiles
         $transactions = Transaction::whereIn('profile_id', $profileIds)
             ->with(['profile', 'category'])
@@ -30,6 +42,10 @@ class TransactionController extends Controller
 
         // Retrieve only profiles belonging to the logged-in user
         $profiles = $user->profiles;
+
+        $profileId = session('selected_profile_id');
+
+        // dd($profileId);
 
         // Compute Income Chart Data
         $incomeDataQuery = Transaction::selectRaw('category_id, SUM(amount) as total')
@@ -53,18 +69,10 @@ class TransactionController extends Controller
         $expenseCategories = $expenseDataQuery->pluck('category.name');
         $expenseData = $expenseDataQuery->pluck('total');
         
-        $incomes = Transaction::where('profile_id', $profileIds)
-                            ->where('type', 'income')
-                            ->sum('amount');
-        $expenses = Transaction::where('profile_id', $profileIds)
-                                ->where('type', 'expense')
-                                ->sum('amount');
-        $accountBalance = $incomes - $expenses;
-
         return view('dashboard', compact(
             'transactions', 
             'categories',
-            'profiles', 
+            'profileId', 
             'incomeCategories', 
             'incomeData',
             'expenseCategories', 

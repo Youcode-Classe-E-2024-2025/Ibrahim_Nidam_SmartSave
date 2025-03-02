@@ -238,14 +238,7 @@
                     </div>
                     
                     <div>
-                        <label for="profile_id" class="block text-sm font-medium mb-1">Profile</label>
-                        <select id="profile_id" name="profile_id" required
-                                class="w-full bg-gray-800 border border-dark-border rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option value="">Select a profile</option>
-                            @foreach($profiles as $profile)
-                                <option value="{{ $profile->id }}">{{ $profile->name }}</option>
-                            @endforeach
-                        </select>
+                        <input type="hidden" name="profile_id" value="{{$profileId}}">
                     </div>
                     
                     <div>

@@ -11,7 +11,6 @@ class SavingGoalController extends Controller
     /**
      * Display a listing of the resource.
      */
-    // In SavingGoalController.php
     public function index()
 {
     // Get all profiles associated with the authenticated user
@@ -115,7 +114,6 @@ class SavingGoalController extends Controller
                                 ->where('type', 'expense')
                                 ->sum('amount');
         $accountBalance = $incomes - $expenses;
-
         // Ensure sufficient funds before allowing the transaction
         if ($accountBalance < $savingGoal->target_amount) {
             return redirect('/saving-goals')->with('error', 'Insufficient funds for this goal.');
