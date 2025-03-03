@@ -24,7 +24,7 @@ class TransactionFactory extends Factory
             'date' => $this->faker->date(),
             'amount' => $this->faker->randomFloat(2, 10, 1000),
             'description' => $this->faker->sentence(),
-            'type' => null, // Directly creating a category and getting its type
+            'type' => $this->faker->randomElement(['income', 'expense']) ?? null, // Directly creating a category and getting its type
             'created_at' => now(),
             'updated_at' => now(),
         ];

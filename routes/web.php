@@ -19,6 +19,7 @@ Route::post('/logout', [SessionController::class, 'destroy']);
 Route::get('/profiles', [ProfileController::class, 'index'])->name('profiles.index');
 Route::post('/profiles', [ProfileController::class, 'store'])->name('profiles.store');
 Route::post('/profiles/verify-pin', [ProfileController::class, 'verifyPin'])->name('profiles.verifyPin');
+Route::get('/profiles/select/{profile}', [ProfileController::class, 'selectProfile'])->name('profiles.select');
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('transactions', TransactionController::class);
