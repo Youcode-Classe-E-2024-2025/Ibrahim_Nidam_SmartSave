@@ -132,7 +132,7 @@
                 <div class="bg-dark-surface p-6 rounded border border-dark-border text-center">
                     <i class="fas fa-exclamation-circle text-yellow-500 text-3xl mb-3"></i>
                     <p class="text-lg">No data available. Please add income transactions to see your budget distribution.</p>
-                    <a href="/" class="inline-block mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
+                    <a href="/dashboard" class="inline-block mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
                         Return to dashboard
                     </a>
                 </div>

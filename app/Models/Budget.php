@@ -20,15 +20,4 @@ class Budget extends Model
         return $this->belongsTo(Profile::class);
     }
 
-    // Example method from your class diagram
-    public function checkStatus()
-    {
-        // Possibly compare sum of expenses for the month vs monthly_budget
-        // Return e.g. 'OK' or 'Exceeded'
-    }
-
-    public function optimizeBudget()
-    {
-        // Some logic to redistribute amounts or give suggestions
-    }
 }
