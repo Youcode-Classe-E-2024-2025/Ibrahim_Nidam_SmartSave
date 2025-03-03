@@ -10,6 +10,7 @@
 
 - **GitHub Repository :** [View on GitHub](https://github.com/Youcode-Classe-E-2024-2025/Ibrahim_Nidam_SmartSave.git)
 - **Project Backlog :** [View Backlog](https://github.com/orgs/Youcode-Classe-E-2024-2025/projects/136/views/1?system_template=team_planning)
+- **Project Presentation :** [View Presentation](https://www.canva.com/design/DAGgrbgDb8U/zZuJQ29Ig74yju6I8Ogsuw/view?utm_content=DAGgrbgDb8U&utm_campaign=designshare&utm_medium=link2&utm_source=uniquelinks&utlId=hf93c1712ca)
 - **UML Diagrams:** [View in public/UML]()
 
 ![Diagram](public/UML/SmartSave%20-%20UML.drawio.svg)
